@@ -5,7 +5,8 @@
   "main": "src/simulator.jsx",
   "type": "module",
   "scripts": {
-  "test": "echo \"No tests yet\""  
+    "build": "mkdir -p dist && cp index.html dist/ && cp -r src dist/",
+    "test": "echo \"No tests yet\""
   },
   "keywords": [
     "react",
