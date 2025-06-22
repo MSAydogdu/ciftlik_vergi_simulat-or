@@ -1,1 +1,1 @@
-# ciftlik_vergi_simulat-or
+# ciftlik_vergi_simulator
