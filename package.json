@@ -5,7 +5,9 @@
   "main": "simulator.jsx",
   "type": "module",
   "scripts": {
-    "test": "echo \"No tests yet\""
+  "build": "echo 'No build step required' && exit 0",
+  "start": "vite"
+}
   },
   "keywords": [
     "react",
