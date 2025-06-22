@@ -1,2 +1,2 @@
-export { default } from "../simulator.jsx";
-export * from "../simulator.jsx";
+export { default } from "./simulator.jsx";
+export * from "./simulator.jsx";

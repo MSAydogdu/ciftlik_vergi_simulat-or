@@ -2,7 +2,7 @@
   "name": "ciftlik-vergi-simulator",
   "version": "1.0.0",
   "description": "Farm tax simulator React component",
-  "main": "simulator.jsx",
+  "main": "src/simulator.jsx",
   "type": "module",
   "scripts": {
   "build": "vite build",
