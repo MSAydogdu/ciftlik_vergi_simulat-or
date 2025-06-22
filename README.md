@@ -8,7 +8,7 @@ This project provides a simple React component for a farm tax simulator.
    ```bash
    npm install
    ```
-2. Open `dist/index.html` in a browser after running the build step.
+2. Run the build step and open `dist/index.html` in a browser. React and Babel are loaded from a CDN so no bundler is required.
 
 ## Production build
 

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+// React is loaded globally via CDN
+const { useState } = React;
 
 const aciklamalar = {
   girisBedeli: "Yatırımcıdan alınan hayvan başı giriş bedeli (KDV hariç)",
@@ -179,3 +180,10 @@ export default function VergiSimulasyonuTablosu() {
 }
 
 export { varsayilanVeri, hesaplaYillikVeri };
+
+// Expose component globally for the browser build
+if (typeof window !== 'undefined') {
+  window.VergiSimulasyonuTablosu = VergiSimulasyonuTablosu;
+  window.varsayilanVeri = varsayilanVeri;
+  window.hesaplaYillikVeri = hesaplaYillikVeri;
+}
