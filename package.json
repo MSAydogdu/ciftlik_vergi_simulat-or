@@ -1,0 +1,22 @@
+{
+  "name": "ciftlik-vergi-simulator",
+  "version": "1.0.0",
+  "description": "Farm tax simulator React component",
+  "main": "simulator.jsx",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"No tests yet\""
+  },
+  "keywords": [
+    "react",
+    "farm",
+    "tax",
+    "simulator"
+  ],
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "author": "",
+  "license": "MIT"
+}
