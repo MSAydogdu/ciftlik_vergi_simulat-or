@@ -5,9 +5,9 @@
   "main": "simulator.jsx",
   "type": "module",
   "scripts": {
-  "build": "echo 'No build step required' && exit 0",
-  "start": "vite"
-}
+  "build": "vite build",
+  "dev": "vite",
+  "preview": "vite preview"
   },
   "keywords": [
     "react",
