@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from "https://esm.sh/react";
 
 const aciklamalar = {
   girisBedeli: "Yatırımcıdan alınan hayvan başı giriş bedeli (KDV hariç)",
