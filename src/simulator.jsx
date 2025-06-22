@@ -1,5 +1,5 @@
-// React is loaded globally via CDN
-const { useState } = React;
+
+import React, { useState } from "https://esm.sh/react";
 
 const aciklamalar = {
   girisBedeli: "Yatırımcıdan alınan hayvan başı giriş bedeli (KDV hariç)",
