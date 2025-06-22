@@ -1,3 +1,4 @@
+
 import React, { useState } from "https://esm.sh/react";
 
 const aciklamalar = {
@@ -101,7 +102,7 @@ function hesaplaYillikVeri(veri, hayvanSayisi, tip) {
   };
 }
 
-export default function VergiSimulasyonuTablosu() {
+function VergiSimulasyonuTablosu() {
   const [veri, setVeri] = useState(varsayilanVeri);
   const yatirimci = hesaplaYillikVeri(veri, veri.inekSayisiYatirimci, "yatirimci");
   const sirket = hesaplaYillikVeri(veri, veri.inekSayisiSirket, "sirket");
@@ -178,4 +179,14 @@ export default function VergiSimulasyonuTablosu() {
   );
 }
 
-export { varsayilanVeri, hesaplaYillikVeri };
+// Expose functions for Node or browser environments
+if (typeof module !== 'undefined') {
+  module.exports = { VergiSimulasyonuTablosu, varsayilanVeri, hesaplaYillikVeri };
+}
+
+// Expose component globally for the browser build
+if (typeof window !== 'undefined') {
+  window.VergiSimulasyonuTablosu = VergiSimulasyonuTablosu;
+  window.varsayilanVeri = varsayilanVeri;
+  window.hesaplaYillikVeri = hesaplaYillikVeri;
+}
