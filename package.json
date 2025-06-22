@@ -5,9 +5,7 @@
   "main": "src/simulator.jsx",
   "type": "module",
   "scripts": {
-  "build": "vite build",
-  "dev": "vite",
-  "preview": "vite preview"
+    "build": "mkdir -p dist && cp index.html dist/ && cp -r src dist/"
   },
   "keywords": [
     "react",
@@ -15,10 +13,7 @@
     "tax",
     "simulator"
   ],
-  "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
-  },
+  "dependencies": {},
   "author": "",
   "license": "MIT"
 }
