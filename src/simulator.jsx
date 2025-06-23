@@ -38,7 +38,7 @@ const varsayilanVeri = {
   cobanGideriSirket: 15000,
   yatirimciOdemeStopaj: 20,
   gelirVergisi: 23,
-  inekSayisiSirket: 300,
+  inekSayisiSirket: 1,
   inekSayisiYatirimci: 1,
   amortismanGideriSirket: 60000,
   amortismanGideriYatirimci: 2000,
