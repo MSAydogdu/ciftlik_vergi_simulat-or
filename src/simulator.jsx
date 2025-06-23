@@ -24,24 +24,24 @@ const aciklamalar = {
 };
 
 const varsayilanVeri = {
-  girisBedeli: 150000,
+  girisBedeli: 140000,
   girisKDV: 20,
   sutFiyati: 18,
   sutKDV: 1,
-  aylikSutMiktari: 300,
-  yillikBuzagiGeliri: 12000,
+  aylikSutMiktari: 900,
+  yillikBuzagiGeliri: 35000,
   buzagiKDV: 1,
-  yemGideri: 2000,
-  veterinerGideriSirket: 15000,
-  kiraGideriSirket: 20000,
+  yemGideri: 2500,
+  veterinerGideriSirket: 150000,
+  kiraGideriSirket: 200000,
   cobanGideriYatirimci: 500,
-  cobanGideriSirket: 15000,
+  cobanGideriSirket: 100000,
   yatirimciOdemeStopaj: 20,
-  gelirVergisi: 23,
+  gelirVergisi: 20,
   inekSayisiSirket: 1,
   inekSayisiYatirimci: 1,
-  amortismanGideriSirket: 60000,
-  amortismanGideriYatirimci: 2000,
+  amortismanGideriSirket: 0,
+  amortismanGideriYatirimci: 0,
   yatirimciTipi: "bireysel"
 };
 
