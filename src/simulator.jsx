@@ -125,40 +125,88 @@ function VergiSimulasyonuTablosu() {
       ]
     };
 
-    return (
-      <div style={{ display: "flex", gap: "2rem", alignItems: "flex-start" }}>
-        {Object.entries(gruplar).map(([grupAdi, anahtarlar]) => (
-          <div key={grupAdi} style={{ flex: 1 }}>
-            <h4>{grupAdi}</h4>
-            {anahtarlar.map((key) => (
-              <div key={key} style={{ marginBottom: "1rem" }}>
-                <label style={{ fontWeight: "bold", display: "block", marginBottom: "0.3rem" }}>
-                  {aciklamalar[key] || key}
-                </label>
-                <input
-                  type="number"
-                  step="any"
-                  name={key}
-                  value={veri[key]}
-                  onChange={handleChange}
-                  style={{ width: "100%", padding: "0.5rem", border: "1px solid #aaa", borderRadius: "4px" }}
-                />
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
-    );
+      return (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "1.5rem"
+          }}
+        >
+          {Object.entries(gruplar).map(([grupAdi, anahtarlar]) => (
+            <div
+              key={grupAdi}
+              style={{
+                backgroundColor: "#fff",
+                padding: "1rem",
+                borderRadius: "8px",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
+              }}
+            >
+              <h4 style={{ margin: "0 0 0.5rem 0" }}>{grupAdi}</h4>
+              {anahtarlar.map((key) => (
+                <div key={key} style={{ marginBottom: "1rem" }}>
+                  <label
+                    style={{
+                      fontWeight: "bold",
+                      display: "block",
+                      marginBottom: "0.3rem"
+                    }}
+                  >
+                    {aciklamalar[key] || key}
+                  </label>
+                  <input
+                    type="number"
+                    step="any"
+                    name={key}
+                    value={veri[key]}
+                    onChange={handleChange}
+                    style={{
+                      width: "100%",
+                      padding: "0.5rem",
+                      border: "1px solid #ccc",
+                      borderRadius: "4px"
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      );
   };
 
   const renderTablo = (baslik, obj) => (
-    <div style={{ flex: 1, margin: "1rem" }}>
-      <h3>{baslik}</h3>
-      <table border="1" cellPadding="6" cellSpacing="0" style={{ width: "100%", backgroundColor: "#fff" }}>
-        <thead><tr><th>Açıklama</th><th>Tutar (₺)</th></tr></thead>
+    <div
+      style={{
+        flex: 1,
+        margin: "1rem",
+        backgroundColor: "#fff",
+        borderRadius: "8px",
+        boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
+      }}
+    >
+      <h3 style={{ textAlign: "center" }}>{baslik}</h3>
+      <table
+        border="1"
+        cellPadding="6"
+        cellSpacing="0"
+        style={{ width: "100%", borderCollapse: "collapse" }}
+      >
+        <thead>
+          <tr>
+            <th>Açıklama</th>
+            <th>Tutar (₺)</th>
+          </tr>
+        </thead>
         <tbody>
           {Object.entries(obj).map(([key, value]) => (
-            <tr key={key}><td>{key}</td><td>{value.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}</td></tr>
+            <tr key={key}>
+              <td>{key}</td>
+              <td>
+                {value.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}
+              </td>
+            </tr>
           ))}
         </tbody>
       </table>
@@ -166,18 +214,46 @@ function VergiSimulasyonuTablosu() {
   );
 
   return (
-    <div style={{ padding: "1rem" }}>
+    <div style={{ padding: "1rem", maxWidth: "1200px", margin: "0 auto" }}>
       <h2 style={{ textAlign: "center" }}>Vergi Simülasyonu</h2>
-      <div style={{ display: "flex", alignItems: "flex-start", gap: "2rem", flexWrap: "wrap" }}>
-        <div style={{ flex: "0 0 340px", maxHeight: "80vh", overflowY: "auto" }}>{renderGroupedInputs()}</div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "flex-start",
+          gap: "2rem",
+          flexWrap: "wrap"
+        }}
+      >
+        <div
+          style={{
+            flex: "0 0 380px",
+            maxHeight: "80vh",
+            overflowY: "auto",
+            overflowX: "hidden"
+          }}
+        >
+          {renderGroupedInputs()}
+        </div>
         <div style={{ flex: 1, maxHeight: "80vh", overflowY: "auto" }}>
-          <div style={{ width: "100%", textAlign: "center" }}><h2>Yatırımcı</h2></div>
-          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
-            {Object.entries(yatirimci).map(([kategori, veri]) => renderTablo(kategori, veri))}
+          <div style={{ width: "100%", textAlign: "center" }}>
+            <h2>Yatırımcı</h2>
           </div>
-          <div style={{ width: "100%", textAlign: "center", marginTop: "2rem" }}><h2>Şirket</h2></div>
-          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
-            {Object.entries(sirket).map(([kategori, veri]) => renderTablo(kategori, veri))}
+          <div
+            style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
+          >
+            {Object.entries(yatirimci).map(([kategori, veri]) =>
+              renderTablo(kategori, veri)
+            )}
+          </div>
+          <div style={{ width: "100%", textAlign: "center", marginTop: "2rem" }}>
+            <h2>Şirket</h2>
+          </div>
+          <div
+            style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
+          >
+            {Object.entries(sirket).map(([kategori, veri]) =>
+              renderTablo(kategori, veri)
+            )}
           </div>
         </div>
       </div>
