@@ -11,15 +11,18 @@ const aciklamalar = {
   buzagiKDV: "Buzağı satışında uygulanan KDV oranı (%)",
   yemGideri: "Aylık hayvan başı yem maliyeti (TL)",
   veterinerGideriSirket: "Şirketin toplam veteriner gideri (aylık, TL)",
+  veterinerGideriYatirimci:
+    "Yatırımcıya ait hayvan için aylık veteriner gideri (TL)",
   kiraGideriSirket: "Şirketin aylık çiftlik kira gideri (TL)",
   cobanGideriYatirimci: "Yatırımcıya ait hayvan için aylık çoban gideri (TL)",
   cobanGideriSirket: "Şirketin toplam çoban gideri (aylık, TL)",
   yatirimciOdemeStopaj: "Yatırımcıya yapılan ödeme için uygulanacak stopaj oranı (%)",
   gelirVergisi: "Net kâr üzerinden alınan gelir vergisi oranı (%)",
   inekSayisiSirket: "Şirketin sahip olduğu toplam inek sayısı",
-  inekSayisiYatirimci: "Yatırımcının sahip olduğu inek sayısı",
+  inekSayisiBireysel: "Bireysel yatırımcıya ait inek sayısı",
+  inekSayisiKurumsal: "Kurumsal yatırımcıya ait inek sayısı",
   amortismanGideriSirket: "Şirketin yıllık amortisman gideri (TL)",
-  amortismanGideriYatirimci: "Yatırımcının yıllık amortisman gideri (hayvan başı, TL)"
+  toplamKapasite: "Çiftliğin toplam hayvan kapasitesi"
 };
 
 const varsayilanVeri = {
@@ -28,19 +31,21 @@ const varsayilanVeri = {
   sutFiyati: 18,
   sutKDV: 1,
   aylikSutMiktari: 300,
-  yillikBuzagiGeliri: 12000,
+  yillikBuzagiGeliri: 50000,
   buzagiKDV: 1,
   yemGideri: 2000,
-  veterinerGideriSirket: 15000,
-  kiraGideriSirket: 20000,
+  veterinerGideriSirket: 150000,
+  veterinerGideriYatirimci: 0,
+  kiraGideriSirket: 150000,
   cobanGideriYatirimci: 500,
-  cobanGideriSirket: 15000,
+  cobanGideriSirket: 100000,
   yatirimciOdemeStopaj: 20,
   gelirVergisi: 23,
   inekSayisiSirket: 300,
-  inekSayisiYatirimci: 1,
+  inekSayisiBireysel: 1,
+  inekSayisiKurumsal: 0,
   amortismanGideriSirket: 60000,
-  amortismanGideriYatirimci: 2000
+  toplamKapasite: 300
 };
 
 function hesaplaYillikVeri(veri, hayvanSayisi, tip) {
@@ -56,20 +61,21 @@ function hesaplaYillikVeri(veri, hayvanSayisi, tip) {
     tip === "yatirimci"
       ? veri.cobanGideriYatirimci * hayvanSayisi * 12
       : veri.cobanGideriSirket;
-  const veterinerGideri = tip === "sirket" ? veri.veterinerGideriSirket : 0;
-  const kiraGideri = tip === "sirket" ? veri.kiraGideriSirket : 0;
-  const amortismanGideri =
+  const veterinerGideri =
     tip === "sirket"
-      ? veri.amortismanGideriSirket
-      : veri.amortismanGideriYatirimci * hayvanSayisi;
+      ? veri.veterinerGideriSirket
+      : veri.veterinerGideriYatirimci * hayvanSayisi * 12;
+  const kiraGideri = tip === "sirket" ? veri.kiraGideriSirket : 0;
+  const amortismanGideri = tip === "sirket" ? veri.amortismanGideriSirket : 0;
 
   const toplamGelir = yillikSutGeliri + yillikBuzagiGeliri;
   const toplamKDV = yillikSutKDV + yillikBuzagiKDV;
   const toplamGider = yemGideri + cobanGideri + veterinerGideri + kiraGideri + amortismanGideri;
 
   const ebitda = toplamGelir - (toplamGider - amortismanGideri);
-  const gelirVergisi = ebitda * (veri.gelirVergisi / 100);
-  const netKar = ebitda - gelirVergisi;
+  const ebit = ebitda - amortismanGideri;
+  const gelirVergisi = ebit * (veri.gelirVergisi / 100);
+  const netKar = ebit - gelirVergisi;
 
   const gelenKDV = yillikSutKDV + yillikBuzagiKDV;
   const gidenKDV = 0;
@@ -104,61 +110,226 @@ function hesaplaYillikVeri(veri, hayvanSayisi, tip) {
 
 function VergiSimulasyonuTablosu() {
   const [veri, setVeri] = useState(varsayilanVeri);
-  const yatirimci = hesaplaYillikVeri(veri, veri.inekSayisiYatirimci, "yatirimci");
-  const sirket = hesaplaYillikVeri(veri, veri.inekSayisiSirket, "sirket");
+  const [ayarlarGoster, setAyarlarGoster] = useState(false);
+  const yatirimciBireysel = hesaplaYillikVeri(
+    veri,
+    veri.inekSayisiBireysel,
+    "yatirimci"
+  );
+  const yatirimciKurumsal = hesaplaYillikVeri(
+    veri,
+    veri.inekSayisiKurumsal,
+    "yatirimci"
+  );
+  const sirket = hesaplaYillikVeri(
+    veri,
+    veri.inekSayisiSirket + veri.inekSayisiBireysel + veri.inekSayisiKurumsal,
+    "sirket"
+  );
+
+  const bireyselStopaj =
+    yatirimciBireysel.KarZarar["Net Kâr"] * (veri.yatirimciOdemeStopaj / 100);
+  const yatirimciStopaj = bireyselStopaj;
+
+  const devletOdemeleri = {
+    "Ödenecek KDV": sirket.KDVTablosu["Ödenecek KDV"],
+    "Gelir Vergisi": sirket.KarZarar["Gelir Vergisi"],
+    "Yatırımcı Stopajı": yatirimciStopaj,
+    "Toplam Ödeme":
+      sirket.KDVTablosu["Ödenecek KDV"] +
+      sirket.KarZarar["Gelir Vergisi"] +
+      yatirimciStopaj
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setVeri({ ...veri, [name]: parseFloat(value) || 0 });
+    let val = parseFloat(value) || 0;
+    if (
+      ["inekSayisiBireysel", "inekSayisiKurumsal", "inekSayisiSirket"].includes(
+        name
+      )
+    ) {
+      const others =
+        veri.inekSayisiBireysel +
+        veri.inekSayisiKurumsal +
+        veri.inekSayisiSirket -
+        veri[name];
+      const maxAllowed = veri.toplamKapasite - others;
+      if (val > maxAllowed) val = maxAllowed;
+      if (val < 0) val = 0;
+    }
+    setVeri({ ...veri, [name]: val });
   };
 
   const renderGroupedInputs = () => {
     const gruplar = {
       "Yatırımcı Parametreleri": [
-        "inekSayisiYatirimci", "cobanGideriYatirimci", "amortismanGideriYatirimci"
+        "inekSayisiBireysel",
+        "inekSayisiKurumsal",
+        "cobanGideriYatirimci",
+        "veterinerGideriYatirimci"
       ],
       "Şirket Parametreleri": [
-        "inekSayisiSirket", "veterinerGideriSirket", "kiraGideriSirket", "cobanGideriSirket", "amortismanGideriSirket"
+        "inekSayisiSirket",
+        "veterinerGideriSirket",
+        "kiraGideriSirket",
+        "cobanGideriSirket",
+        "amortismanGideriSirket"
       ],
       "Genel Parametreler": [
-        "girisBedeli", "girisKDV", "sutFiyati", "sutKDV", "aylikSutMiktari", "yillikBuzagiGeliri", "buzagiKDV", "yemGideri", "yatirimciOdemeStopaj", "gelirVergisi"
+        "girisBedeli",
+        "sutFiyati",
+        "aylikSutMiktari",
+        "yillikBuzagiGeliri",
+        "yemGideri"
       ]
     };
 
-    return (
-      <div style={{ display: "flex", gap: "2rem", alignItems: "flex-start" }}>
-        {Object.entries(gruplar).map(([grupAdi, anahtarlar]) => (
-          <div key={grupAdi} style={{ flex: 1 }}>
-            <h4>{grupAdi}</h4>
-            {anahtarlar.map((key) => (
-              <div key={key} style={{ marginBottom: "1rem" }}>
-                <label style={{ fontWeight: "bold", display: "block", marginBottom: "0.3rem" }}>
-                  {aciklamalar[key] || key}
-                </label>
-                <input
-                  type="number"
-                  step="any"
-                  name={key}
-                  value={veri[key]}
-                  onChange={handleChange}
-                  style={{ width: "100%", padding: "0.5rem", border: "1px solid #aaa", borderRadius: "4px" }}
-                />
+    const ayarAlanlari = [
+      "girisKDV",
+      "sutKDV",
+      "buzagiKDV",
+      "yatirimciOdemeStopaj",
+      "gelirVergisi",
+      "toplamKapasite"
+    ];
+
+      return (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "1.5rem"
+          }}
+        >
+          {Object.entries(gruplar).map(([grupAdi, anahtarlar]) => (
+            <div
+              key={grupAdi}
+              style={{
+                backgroundColor: "#fff",
+                padding: "1rem",
+                borderRadius: "8px",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
+              }}
+            >
+              <h4 style={{ margin: "0 0 0.5rem 0" }}>{grupAdi}</h4>
+              {anahtarlar.map((key) => (
+                <div key={key} style={{ marginBottom: "1rem" }}>
+                  <label
+                    style={{
+                      fontWeight: "bold",
+                      display: "block",
+                      marginBottom: "0.3rem"
+                    }}
+                  >
+                    {aciklamalar[key] || key}
+                  </label>
+                  <input
+                    type="number"
+                    step="any"
+                    name={key}
+                    value={veri[key]}
+                    onChange={handleChange}
+                    style={{
+                      width: "100%",
+                      padding: "0.5rem",
+                      border: "1px solid #ccc",
+                      borderRadius: "4px"
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          ))}
+          <div>
+            <button
+              onClick={() => setAyarlarGoster(!ayarlarGoster)}
+              style={{
+                marginBottom: "0.5rem",
+                padding: "0.5rem 1rem",
+                border: "none",
+                background: "#007bff",
+                color: "#fff",
+                borderRadius: "4px",
+                cursor: "pointer"
+              }}
+            >
+              {ayarlarGoster ? "Ayarları Gizle" : "Ayarları Göster"}
+            </button>
+            {ayarlarGoster && (
+              <div
+                style={{
+                  backgroundColor: "#fff",
+                  padding: "1rem",
+                  borderRadius: "8px",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
+                }}
+              >
+                <h4 style={{ margin: "0 0 0.5rem 0" }}>Ayarlar</h4>
+                {ayarAlanlari.map((key) => (
+                  <div key={key} style={{ marginBottom: "1rem" }}>
+                    <label
+                      style={{
+                        fontWeight: "bold",
+                        display: "block",
+                        marginBottom: "0.3rem"
+                      }}
+                    >
+                      {aciklamalar[key] || key}
+                    </label>
+                    <input
+                      type="number"
+                      step="any"
+                      name={key}
+                      value={veri[key]}
+                      onChange={handleChange}
+                      style={{
+                        width: "100%",
+                        padding: "0.5rem",
+                        border: "1px solid #ccc",
+                        borderRadius: "4px"
+                      }}
+                    />
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
-        ))}
-      </div>
-    );
+        </div>
+      );
   };
 
   const renderTablo = (baslik, obj) => (
-    <div style={{ flex: 1, margin: "1rem" }}>
-      <h3>{baslik}</h3>
-      <table border="1" cellPadding="6" cellSpacing="0" style={{ width: "100%", backgroundColor: "#fff" }}>
-        <thead><tr><th>Açıklama</th><th>Tutar (₺)</th></tr></thead>
+    <div
+      style={{
+        flex: 1,
+        margin: "1rem",
+        backgroundColor: "#fff",
+        borderRadius: "8px",
+        boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
+      }}
+    >
+      <h3 style={{ textAlign: "center" }}>{baslik}</h3>
+      <table
+        border="1"
+        cellPadding="6"
+        cellSpacing="0"
+        style={{ width: "100%", borderCollapse: "collapse" }}
+      >
+        <thead>
+          <tr>
+            <th>Açıklama</th>
+            <th>Tutar (₺)</th>
+          </tr>
+        </thead>
         <tbody>
           {Object.entries(obj).map(([key, value]) => (
-            <tr key={key}><td>{key}</td><td>{value.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}</td></tr>
+            <tr key={key}>
+              <td>{key}</td>
+              <td>
+                {value.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}
+              </td>
+            </tr>
           ))}
         </tbody>
       </table>
@@ -166,18 +337,64 @@ function VergiSimulasyonuTablosu() {
   );
 
   return (
-    <div style={{ padding: "1rem" }}>
+    <div style={{ padding: "1rem", maxWidth: "1600px", margin: "0 auto" }}>
       <h2 style={{ textAlign: "center" }}>Vergi Simülasyonu</h2>
-      <div style={{ display: "flex", alignItems: "flex-start", gap: "2rem", flexWrap: "wrap" }}>
-        <div style={{ flex: "0 0 340px", maxHeight: "80vh", overflowY: "auto" }}>{renderGroupedInputs()}</div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "flex-start",
+          gap: "2rem",
+          flexWrap: "wrap"
+        }}
+      >
+        <div
+          style={{
+            flex: "0 0 450px",
+            maxHeight: "80vh",
+            overflowY: "auto",
+            overflowX: "hidden"
+          }}
+        >
+          {renderGroupedInputs()}
+        </div>
         <div style={{ flex: 1, maxHeight: "80vh", overflowY: "auto" }}>
-          <div style={{ width: "100%", textAlign: "center" }}><h2>Yatırımcı</h2></div>
-          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
-            {Object.entries(yatirimci).map(([kategori, veri]) => renderTablo(kategori, veri))}
+          <div style={{ width: "100%", textAlign: "center" }}>
+            <h2>Bireysel Yatırımcı</h2>
           </div>
-          <div style={{ width: "100%", textAlign: "center", marginTop: "2rem" }}><h2>Şirket</h2></div>
-          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
-            {Object.entries(sirket).map(([kategori, veri]) => renderTablo(kategori, veri))}
+          <div
+            style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
+          >
+            {Object.entries(yatirimciBireysel).map(([kategori, veri]) =>
+              renderTablo(kategori, veri)
+            )}
+          </div>
+          <div style={{ width: "100%", textAlign: "center", marginTop: "2rem" }}>
+            <h2>Kurumsal Yatırımcı</h2>
+          </div>
+          <div
+            style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
+          >
+            {Object.entries(yatirimciKurumsal).map(([kategori, veri]) =>
+              renderTablo(kategori, veri)
+            )}
+          </div>
+          <div style={{ width: "100%", textAlign: "center", marginTop: "2rem" }}>
+            <h2>Şirket</h2>
+          </div>
+          <div
+            style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
+          >
+            {Object.entries(sirket).map(([kategori, veri]) =>
+              renderTablo(kategori, veri)
+            )}
+          </div>
+          <div style={{ width: "100%", textAlign: "center", marginTop: "2rem" }}>
+            <h2>Devlete Ödemeler</h2>
+          </div>
+          <div
+            style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
+          >
+            {renderTablo("Devlet Ödemeleri", devletOdemeleri)}
           </div>
         </div>
       </div>
