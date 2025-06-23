@@ -168,12 +168,18 @@ function VergiSimulasyonuTablosu() {
   return (
     <div style={{ padding: "1rem" }}>
       <h2 style={{ textAlign: "center" }}>Vergi Simülasyonu</h2>
-      {renderGroupedInputs()}
-      <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", justifyContent: "center" }}>
-        <div style={{ width: "100%", textAlign: "center" }}><h2>Yatırımcı</h2></div>
-        {Object.entries(yatirimci).map(([kategori, veri]) => renderTablo(kategori, veri))}
-        <div style={{ width: "100%", textAlign: "center", marginTop: "3rem" }}><h2>Şirket</h2></div>
-        {Object.entries(sirket).map(([kategori, veri]) => renderTablo(kategori, veri))}
+      <div style={{ display: "flex", alignItems: "flex-start", gap: "2rem", flexWrap: "wrap" }}>
+        <div style={{ flex: "0 0 340px", maxHeight: "80vh", overflowY: "auto" }}>{renderGroupedInputs()}</div>
+        <div style={{ flex: 1, maxHeight: "80vh", overflowY: "auto" }}>
+          <div style={{ width: "100%", textAlign: "center" }}><h2>Yatırımcı</h2></div>
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+            {Object.entries(yatirimci).map(([kategori, veri]) => renderTablo(kategori, veri))}
+          </div>
+          <div style={{ width: "100%", textAlign: "center", marginTop: "2rem" }}><h2>Şirket</h2></div>
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+            {Object.entries(sirket).map(([kategori, veri]) => renderTablo(kategori, veri))}
+          </div>
+        </div>
       </div>
     </div>
   );
