@@ -19,7 +19,8 @@ const aciklamalar = {
   inekSayisiSirket: "Şirketin sahip olduğu toplam inek sayısı",
   inekSayisiYatirimci: "Yatırımcının sahip olduğu inek sayısı",
   amortismanGideriSirket: "Şirketin yıllık amortisman gideri (TL)",
-  amortismanGideriYatirimci: "Yatırımcının yıllık amortisman gideri (hayvan başı, TL)"
+  amortismanGideriYatirimci: "Yatırımcının yıllık amortisman gideri (hayvan başı, TL)",
+  yatirimciTipi: "Yatırımcı tipi (kurumsal veya bireysel)"
 };
 
 const varsayilanVeri = {
@@ -40,7 +41,8 @@ const varsayilanVeri = {
   inekSayisiSirket: 300,
   inekSayisiYatirimci: 1,
   amortismanGideriSirket: 60000,
-  amortismanGideriYatirimci: 2000
+  amortismanGideriYatirimci: 2000,
+  yatirimciTipi: "bireysel"
 };
 
 function hesaplaYillikVeri(veri, hayvanSayisi, tip) {
@@ -105,17 +107,42 @@ function hesaplaYillikVeri(veri, hayvanSayisi, tip) {
 function VergiSimulasyonuTablosu() {
   const [veri, setVeri] = useState(varsayilanVeri);
   const yatirimci = hesaplaYillikVeri(veri, veri.inekSayisiYatirimci, "yatirimci");
-  const sirket = hesaplaYillikVeri(veri, veri.inekSayisiSirket, "sirket");
+  const sirket = hesaplaYillikVeri(
+    veri,
+    veri.inekSayisiSirket + veri.inekSayisiYatirimci,
+    "sirket"
+  );
+
+  const yatirimciStopaj =
+    veri.yatirimciTipi === "bireysel"
+      ? yatirimci.KarZarar["Net Kâr"] * (veri.yatirimciOdemeStopaj / 100)
+      : 0;
+
+  const devletOdemeleri = {
+    "Ödenecek KDV": sirket.KDVTablosu["Ödenecek KDV"],
+    "Gelir Vergisi": sirket.KarZarar["Gelir Vergisi"],
+    "Yatırımcı Stopajı": yatirimciStopaj,
+    "Toplam Ödeme":
+      sirket.KDVTablosu["Ödenecek KDV"] +
+      sirket.KarZarar["Gelir Vergisi"] +
+      yatirimciStopaj
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setVeri({ ...veri, [name]: parseFloat(value) || 0 });
+    setVeri({
+      ...veri,
+      [name]: name === "yatirimciTipi" ? value : parseFloat(value) || 0
+    });
   };
 
   const renderGroupedInputs = () => {
     const gruplar = {
       "Yatırımcı Parametreleri": [
-        "inekSayisiYatirimci", "cobanGideriYatirimci", "amortismanGideriYatirimci"
+        "inekSayisiYatirimci",
+        "cobanGideriYatirimci",
+        "amortismanGideriYatirimci",
+        "yatirimciTipi"
       ],
       "Şirket Parametreleri": [
         "inekSayisiSirket", "veterinerGideriSirket", "kiraGideriSirket", "cobanGideriSirket", "amortismanGideriSirket"
@@ -155,19 +182,31 @@ function VergiSimulasyonuTablosu() {
                   >
                     {aciklamalar[key] || key}
                   </label>
-                  <input
-                    type="number"
-                    step="any"
-                    name={key}
-                    value={veri[key]}
-                    onChange={handleChange}
-                    style={{
-                      width: "100%",
-                      padding: "0.5rem",
-                      border: "1px solid #ccc",
-                      borderRadius: "4px"
-                    }}
-                  />
+                  {key === "yatirimciTipi" ? (
+                    <select
+                      name={key}
+                      value={veri[key]}
+                      onChange={handleChange}
+                      style={{ width: "100%", padding: "0.5rem" }}
+                    >
+                      <option value="bireysel">Bireysel</option>
+                      <option value="kurumsal">Kurumsal</option>
+                    </select>
+                  ) : (
+                    <input
+                      type="number"
+                      step="any"
+                      name={key}
+                      value={veri[key]}
+                      onChange={handleChange}
+                      style={{
+                        width: "100%",
+                        padding: "0.5rem",
+                        border: "1px solid #ccc",
+                        borderRadius: "4px"
+                      }}
+                    />
+                  )}
                 </div>
               ))}
             </div>
@@ -254,6 +293,14 @@ function VergiSimulasyonuTablosu() {
             {Object.entries(sirket).map(([kategori, veri]) =>
               renderTablo(kategori, veri)
             )}
+          </div>
+          <div style={{ width: "100%", textAlign: "center", marginTop: "2rem" }}>
+            <h2>Devlete Ödemeler</h2>
+          </div>
+          <div
+            style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
+          >
+            {renderTablo("Devlet Ödemeleri", devletOdemeleri)}
           </div>
         </div>
       </div>
