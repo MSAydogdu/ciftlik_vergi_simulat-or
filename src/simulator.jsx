@@ -10,6 +10,7 @@ const aciklamalar = {
   buzagiKDV: "Buzağı satışında uygulanan KDV oranı (%)",
   yemGideri: "Aylık hayvan başı yem maliyeti (TL)",
   veterinerGideriSirket: "Şirketin toplam veteriner gideri (aylık, TL)",
+  veterinerGideriYatirimci: "Yatırımcıya ait hayvan için aylık veteriner gideri (TL)",
   kiraGideriSirket: "Şirketin aylık çiftlik kira gideri (TL)",
   cobanGideriYatirimci: "Yatırımcıya ait hayvan için aylık çoban gideri (TL)",
   cobanGideriSirket: "Şirketin toplam çoban gideri (aylık, TL)",
@@ -20,6 +21,7 @@ const aciklamalar = {
   inekSayisiKurumsal: "Kurumsal yatırımcıya ait inek sayısı",
   amortismanGideriSirket: "Şirketin yıllık amortisman gideri (TL)",
   amortismanGideriYatirimci: "Yatırımcının yıllık amortisman gideri (hayvan başı, TL)",
+  toplamKapasite: "Çiftliğin toplam hayvan kapasitesi",
   yatirimciTipi: "Yatırımcı tipi (kurumsal veya bireysel)"
 };
 
@@ -33,6 +35,7 @@ const varsayilanVeri = {
   buzagiKDV: 1,
   yemGideri: 2500,
   veterinerGideriSirket: 150000,
+  veterinerGideriYatirimci: 0,
   kiraGideriSirket: 200000,
   cobanGideriYatirimci: 500,
   cobanGideriSirket: 100000,
@@ -43,5 +46,6 @@ const varsayilanVeri = {
   inekSayisiKurumsal: 0,
   amortismanGideriSirket: 60000,
   amortismanGideriYatirimci: 2000,
+  toplamKapasite: 300,
   yatirimciTipi: "bireysel"
 };
