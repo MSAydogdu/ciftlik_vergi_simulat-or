@@ -11,6 +11,7 @@ const aciklamalar = {
   buzagiKDV: "Buzağı satışında uygulanan KDV oranı (%)",
   yemGideri: "Aylık hayvan başı yem maliyeti (TL)",
   veterinerGideriSirket: "Şirketin toplam veteriner gideri (aylık, TL)",
+  veterinerGideriYatirimci: "Yatırımcıya ait hayvan için aylık veteriner gideri (TL)",
   kiraGideriSirket: "Şirketin aylık çiftlik kira gideri (TL)",
   cobanGideriYatirimci: "Yatırımcıya ait hayvan için aylık çoban gideri (TL)",
   cobanGideriSirket: "Şirketin toplam çoban gideri (aylık, TL)",
@@ -20,6 +21,7 @@ const aciklamalar = {
   inekSayisiYatirimci: "Yatırımcının sahip olduğu inek sayısı",
   amortismanGideriSirket: "Şirketin yıllık amortisman gideri (TL)",
   amortismanGideriYatirimci: "Yatırımcının yıllık amortisman gideri (hayvan başı, TL)",
+  toplamKapasite: "Çiftliğin toplam hayvan kapasitesi",
   yatirimciTipi: "Yatırımcı tipi (kurumsal veya bireysel)"
 };
 
@@ -33,15 +35,18 @@ const varsayilanVeri = {
   buzagiKDV: 1,
   yemGideri: 2500,
   veterinerGideriSirket: 150000,
+  veterinerGideriYatirimci: 0,
   kiraGideriSirket: 200000,
   cobanGideriYatirimci: 500,
   cobanGideriSirket: 100000,
   yatirimciOdemeStopaj: 20,
-  gelirVergisi: 20,
-  inekSayisiSirket: 1,
-  inekSayisiYatirimci: 1,
-  amortismanGideriSirket: 0,
-  amortismanGideriYatirimci: 0,
+  gelirVergisi: 23,
+  inekSayisiSirket: 300,
+  inekSayisiBireysel: 1,
+  inekSayisiKurumsal: 0,
+  amortismanGideriSirket: 60000,
+  amortismanGideriYatirimci: 2000,
+  toplamKapasite: 300,
   yatirimciTipi: "bireysel"
 };
 
@@ -106,7 +111,6 @@ function hesaplaYillikVeri(veri, hayvanSayisi, tip) {
 
 function VergiSimulasyonuTablosu() {
   const [veri, setVeri] = useState(varsayilanVeri);
-  const [ayarlarGoster, setAyarlarGoster] = useState(false);
   const yatirimci = hesaplaYillikVeri(veri, veri.inekSayisiYatirimci, "yatirimci");
   const sirket = hesaplaYillikVeri(
     veri,
@@ -146,105 +150,25 @@ function VergiSimulasyonuTablosu() {
         "yatirimciTipi"
       ],
       "Şirket Parametreleri": [
-        "inekSayisiSirket",
-        "veterinerGideriSirket",
-        "kiraGideriSirket",
-        "cobanGideriSirket",
-        "amortismanGideriSirket"
+
+        "inekSayisiSirket", "veterinerGideriSirket", "kiraGideriSirket", "cobanGideriSirket", "amortismanGideriSirket"
       ],
       "Genel Parametreler": [
-        "girisBedeli",
-        "sutFiyati",
-        "aylikSutMiktari",
-        "yillikBuzagiGeliri",
-        "yemGideri"
+        "girisBedeli", "girisKDV", "sutFiyati", "sutKDV", "aylikSutMiktari", "yillikBuzagiGeliri", "buzagiKDV", "yemGideri", "yatirimciOdemeStopaj", "gelirVergisi"
       ]
     };
 
-    const ayarAlanlari = [
-      "girisKDV",
-      "sutKDV",
-      "buzagiKDV",
-      "yatirimciOdemeStopaj",
-      "gelirVergisi"
-    ];
-
-    return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "1.5rem"
-        }}
-      >
-        {Object.entries(gruplar).map(([grupAdi, anahtarlar]) => (
-          <div
-            key={grupAdi}
-            style={{
-              backgroundColor: "#fff",
-              padding: "1rem",
-              borderRadius: "8px",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
-            }}
-          >
-            <h4 style={{ margin: "0 0 0.5rem 0" }}>{grupAdi}</h4>
-            {anahtarlar.map((key) => (
-              <div key={key} style={{ marginBottom: "1rem" }}>
-                <label
-                  style={{
-                    fontWeight: "bold",
-                    display: "block",
-                    marginBottom: "0.3rem"
-                  }}
-                >
-                  {aciklamalar[key] || key}
-                </label>
-                {key === "yatirimciTipi" ? (
-                  <select
-                    name={key}
-                    value={veri[key]}
-                    onChange={handleChange}
-                    style={{ width: "100%", padding: "0.5rem" }}
-                  >
-                    <option value="bireysel">Bireysel</option>
-                    <option value="kurumsal">Kurumsal</option>
-                  </select>
-                ) : (
-                  <input
-                    type="number"
-                    step="any"
-                    name={key}
-                    value={veri[key]}
-                    onChange={handleChange}
-                    style={{
-                      width: "100%",
-                      padding: "0.5rem",
-                      border: "1px solid #ccc",
-                      borderRadius: "4px"
-                    }}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-        ))}
-        <div>
-          <button
-            onClick={() => setAyarlarGoster(!ayarlarGoster)}
-            style={{
-              marginBottom: "0.5rem",
-              padding: "0.5rem 1rem",
-              border: "none",
-              background: "#007bff",
-              color: "#fff",
-              borderRadius: "4px",
-              cursor: "pointer"
-            }}
-          >
-            {ayarlarGoster ? "Ayarları Gizle" : "Ayarları Göster"}
-          </button>
-          {ayarlarGoster && (
+      return (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "1.5rem"
+          }}
+        >
+          {Object.entries(gruplar).map(([grupAdi, anahtarlar]) => (
             <div
+              key={grupAdi}
               style={{
                 backgroundColor: "#fff",
                 padding: "1rem",
@@ -252,9 +176,9 @@ function VergiSimulasyonuTablosu() {
                 boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
               }}
             >
-              <h4 style={{ margin: "0 0 0.5rem 0" }}>Ayarlar</h4>
-              {ayarAlanlari.map((key) => (
-                <div key={key} style={{ marginBottom: "1rem" }}>
+              <h4 style={{ margin: "0 0 0.5rem 0" }}>{grupAdi}</h4>
+              {anahtarlar.map((key) => (
+             <div key={key} style={{ marginBottom: "1rem" }}>
                   <label
                     style={{
                       fontWeight: "bold",
@@ -264,26 +188,38 @@ function VergiSimulasyonuTablosu() {
                   >
                     {aciklamalar[key] || key}
                   </label>
-                  <input
-                    type="number"
-                    step="any"
-                    name={key}
-                    value={veri[key]}
-                    onChange={handleChange}
-                    style={{
-                      width: "100%",
-                      padding: "0.5rem",
-                      border: "1px solid #ccc",
-                      borderRadius: "4px"
-                    }}
-                  />
+
+                  {key === "yatirimciTipi" ? (
+                    <select
+                      name={key}
+                      value={veri[key]}
+                      onChange={handleChange}
+                      style={{ width: "100%", padding: "0.5rem" }}
+                    >
+                      <option value="bireysel">Bireysel</option>
+                      <option value="kurumsal">Kurumsal</option>
+                    </select>
+                  ) : (
+                    <input
+                      type="number"
+                      step="any"
+                      name={key}
+                      value={veri[key]}
+                      onChange={handleChange}
+                      style={{
+                        width: "100%",
+                        padding: "0.5rem",
+                        border: "1px solid #ccc",
+                        borderRadius: "4px"
+                      }}
+                    />
+                  )}
                 </div>
               ))}
             </div>
-          )}
+          ))}
         </div>
-      </div>
-    );
+      );
   };
 
   const renderTablo = (baslik, obj) => (
