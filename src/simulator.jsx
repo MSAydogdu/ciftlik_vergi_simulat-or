@@ -40,7 +40,6 @@ const varsayilanVeri = {
   cobanGideriYatirimci: 500,
   cobanGideriSirket: 100000,
   yatirimciOdemeStopaj: 20,
-
   gelirVergisi: 23,
   inekSayisiSirket: 300,
   inekSayisiBireysel: 1,
@@ -48,7 +47,6 @@ const varsayilanVeri = {
   amortismanGideriSirket: 60000,
   amortismanGideriYatirimci: 2000,
   toplamKapasite: 300,
-
   yatirimciTipi: "bireysel"
 };
 
@@ -152,6 +150,7 @@ function VergiSimulasyonuTablosu() {
         "yatirimciTipi"
       ],
       "Şirket Parametreleri": [
+
         "inekSayisiSirket", "veterinerGideriSirket", "kiraGideriSirket", "cobanGideriSirket", "amortismanGideriSirket"
       ],
       "Genel Parametreler": [
@@ -179,7 +178,7 @@ function VergiSimulasyonuTablosu() {
             >
               <h4 style={{ margin: "0 0 0.5rem 0" }}>{grupAdi}</h4>
               {anahtarlar.map((key) => (
-                <div key={key} style={{ marginBottom: "1rem" }}>
+             <div key={key} style={{ marginBottom: "1rem" }}>
                   <label
                     style={{
                       fontWeight: "bold",
@@ -189,6 +188,7 @@ function VergiSimulasyonuTablosu() {
                   >
                     {aciklamalar[key] || key}
                   </label>
+
                   {key === "yatirimciTipi" ? (
                     <select
                       name={key}
